@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css">
+   
+</head>
+<body>
+
+    <div class="card">
+        <div class="search">
+            <input type="text" id="cityInput" placeholder="enter city name" spellcheck="false">
+            <button onclick="getWeather()"><img src="images/search.png"></button>
+        </div>
+        <div class="error" id="error"></div>
+        <div class="Weather" id="weatherInfo"></div>
+    </div>
+
+    <script>
+        async function getWeather() {
+            const cityInput = document.getElementById('cityInput').value;
+            const apiKey = '58c3b00097fdadcc143ce302bf4d6ba0'; // Tu clave de API
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityInput}&appid=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const weatherInfo = document.getElementById('weatherInfo');
+                    weatherInfo.innerHTML = `
+                    <div class="Weather">
+                        <img src="" class="weather-icon"> <!-- Imagen del clima -->
+                        <h1 class="temp">${Math.round(data.main.temp - 273.15)}°C</h1>
+                        <h2 class="city">${data.name}</h2>
+                        <div class="details">
+                            <div class="col">
+                                <img src="images/humidity.png">
+                                <div>
+                                    <p class="humidity">${data.main.humidity}%</p>
+                                    <p>Humidity</p>
+                                </div>  
+                            </div>
+                            <div class="col">
+                                <img src="images/wind.png">
+                                <div>
+                                    <p class="wind">${data.wind.speed} km/h</p>
+                                    <p>Wind Speed</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    const weatherIcon = weatherInfo.querySelector(".weather-icon");
+                    if(data.weather[0].main == "Clouds"){
+                        weatherIcon.src = "images/clouds.png";
+                    }
+                    else if(data.weather[0].main == "Clear"){
+                        weatherIcon.src = "images/clear.png";
+                    }
+                    else if(data.weather[0].main == "Rain"){
+                        weatherIcon.src = "images/rain.png";
+                    }
+                    else if(data.weather[0].main == "Drizzle"){
+                        weatherIcon.src = "images/drizzle.png";
+                    }
+                    else if(data.weather[0].main == "Mist"){
+                        weatherIcon.src = "images/mist.png";
+                    }
+                    document.getElementById('error').textContent = ""; // Limpiar mensaje de error si lo hay
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                const errorDiv = document.getElementById('error');
+                errorDiv.textContent = error.message;
+                document.getElementById('weatherInfo').innerHTML = ""; // Limpiar contenido del clima
+            }
+        }
+    </script>
+</body>
+</html>
+
+                    
